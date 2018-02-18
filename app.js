@@ -10,7 +10,7 @@ var app = express();
 var client = redis.createClient();
 
 client.on('connect', function(){
-	console.log('Redis Server Connected...')
+    console.log('Redis Server Connected...')
 });
 
 // view engine setup
@@ -23,10 +23,14 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/', function(req, res){
-	var title = 'Task List';
-	res.render('index', {
-		title: title
+    var title = 'Task List';
+
+    client.lrange('tasks', 0, -1, function(err, reply){
+    	res.render('index', {
+            title: title,
+            tasks: reply
 	});
+    });
 });
 
 app.listen(3000);
